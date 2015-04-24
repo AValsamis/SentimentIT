@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom" >
+
+        <TextView
+            android:id="@+id/textKeyword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@null"
+            android:src="@drawable/theatre_masks"
+            android:includeFontPadding="false"
+            android:gravity="fill"
+            android:layout_below="@+id/UserName"
+            android:layout_toRightOf="@+id/GroupPoints"
+            android:layout_marginTop="64dp"
+            android:layout_toLeftOf="@+id/UserName"
+            android:layout_toStartOf="@+id/UserName"
+            />
+
+        <TextView
+            android:id="@+id/textData"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@null"
+            android:src="@drawable/theatre_masks"
+            android:includeFontPadding="false"
+            android:gravity="fill"
+            android:layout_centerVertical="true"
+            android:layout_alignLeft="@+id/textKeyword"
+            android:layout_alignStart="@+id/textKeyword"
+            android:layout_alignRight="@+id/textKeyword"
+            android:layout_alignEnd="@+id/textKeyword" />
+
+        <ImageButton
+            android:id="@+id/happyButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:src="@drawable/happy4"
+            android:onClick="onClick"
+            android:soundEffectsEnabled="false"
+            android:layout_alignTop="@+id/button2"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentBottom="true"
+            android:clickable="false"/>
+        <ImageButton
+            android:id="@+id/neutralButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/neutral4"
+            android:background="@null"
+            android:onClick="onClick"
+            android:soundEffectsEnabled="false"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:clickable="false"/>
+        <ImageButton
+            android:id="@+id/sadButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/bloomy4"
+            android:background="@null"
+            android:onClick="onClick"
+            android:soundEffectsEnabled="false"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:clickable="false"
+         />
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Small Text"
+            android:id="@+id/GroupName"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Small Text"
+            android:id="@+id/GroupPoints"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/GroupName"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Small Text"
+            android:id="@+id/UserName"
+            android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@+id/UserPoints"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Small Text"
+            android:id="@+id/UserPoints"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"/>
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/progressBar"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true" />
+
+    </RelativeLayout>
+
+
+</LinearLayout>
