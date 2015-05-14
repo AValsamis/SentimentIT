@@ -31,7 +31,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-import gr.ntua.ece.sevle.sentimentit.sentimentit.sharedData.RestAdiDispenser;
+import gr.ntua.ece.sevle.sentimentit.sentimentit.sharedData.RestApiDispenser;
 import gr.ntua.ece.sevle.sentimentit.sentimentit.sharedData.UserData;
 import gr.ntua.ece.sevle.sentimentit.sentimentit.databaseApi.SimpleApi;
 import gr.ntua.ece.sevle.sentimentit.sentimentit.entities.Groups;
@@ -44,7 +44,7 @@ import retrofit.client.Response;
 /**
  * A login screen that offers login via username/password.
  */
-public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
+public class LoginActivity extends Activity {
     //http://stackoverflow.com/questions/22209046/fix-android-studio-login-activity-template-generated-activity
     //http://instructure.github.io/blog/2013/12/09/volley-vs-retrofit/
 
@@ -63,10 +63,9 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         setContentView(gr.ntua.ece.sevle.sentimentit.sentimentit.R.layout.activity_login);
         //Set up rest adapter
 
-        simpleApi = RestAdiDispenser.getSimpleApiInstance();
+        simpleApi = RestApiDispenser.getSimpleApiInstance();
         // Set up the login form.
         musernameView = (AutoCompleteTextView) findViewById(gr.ntua.ece.sevle.sentimentit.sentimentit.R.id.username);
-        populateAutoComplete();
 
         mPasswordView = (EditText) findViewById(gr.ntua.ece.sevle.sentimentit.sentimentit.R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -89,13 +88,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         mLoginFormView = findViewById(gr.ntua.ece.sevle.sentimentit.sentimentit.R.id.login_form);
         mProgressView = findViewById(gr.ntua.ece.sevle.sentimentit.sentimentit.R.id.login_progress);
     }
-
-
-
-    private void populateAutoComplete() {
-        getLoaderManager().initLoader(0, null, this);
-    }
-
 
     public void registerActivity(View view) {
         // Do something in response to press of button
@@ -138,7 +130,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
             }
         };
-
         simpleApi.getGroups(cb2);
     }
 
@@ -153,8 +144,8 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        String username = musernameView.getText().toString().replaceAll("\\r|\\n", "");;
-        String password = mPasswordView.getText().toString().replaceAll("\\r|\\n", "");;
+        String username = musernameView.getText().toString().replaceAll("\\r|\\n", "");
+        String password = mPasswordView.getText().toString().replaceAll("\\r|\\n", "");
 
         boolean cancel = false;
         View focusView = null;
@@ -195,54 +186,56 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                     showProgress(false);
                     System.out.println("Sign in process, checking credentials");
                     if (user!=null && user.getPassword().equals("")){
-                            System.out.println("Credentials are correct");
-                            finish();
-                            UserData data = UserData.getInstance();
+                        System.out.println("Credentials are correct");
+                        finish();
+                        UserData data = UserData.getInstance();
 
-                            data.setUserName(user.getUserName());
-                            data.setUserPoints(user.getUserPoints());
-                            data.setGroupName(user.getGroup().getGroupName());
-                            data.setGroupPoints(user.getGroup().getGroupPoints());
+                        data.setUserName(user.getUserName());
+                        data.setUserPoints(user.getUserPoints());
+                        data.setGroupName(user.getGroup().getGroupName());
+                        data.setGroupPoints(user.getGroup().getGroupPoints());
 
-                            Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
-                            LoginActivity.this.startActivity(myIntent);
-                        }
+                        Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
+                        LoginActivity.this.startActivity(myIntent);
+                    }
                     else {
-                            if (user!=null) {
-                                System.out.println("Credentials are incorrect");
-                                mPasswordView.setError(getString(gr.ntua.ece.sevle.sentimentit.sentimentit.R.string.error_incorrect_password));
-                                mPasswordView.requestFocus();
-                            }else
-                            {
-                                System.out.println("Username is incorrect");
-                                musernameView.setError(getString(gr.ntua.ece.sevle.sentimentit.sentimentit.R.string.error_incorrect_username));
-                                musernameView.requestFocus();
-                            }
+                        if (user!=null)
+                        {
+                            System.out.println("Credentials are incorrect");
+                            mPasswordView.setError(getString(gr.ntua.ece.sevle.sentimentit.sentimentit.R.string.error_incorrect_password));
+                            mPasswordView.requestFocus();
+                        }
+                        else
+                        {
+                            System.out.println("Username is incorrect");
+                            musernameView.setError(getString(gr.ntua.ece.sevle.sentimentit.sentimentit.R.string.error_incorrect_username));
+                            musernameView.requestFocus();
+                        }
 
-                        }
                     }
+                }
                 @Override
-                    public void failure(RetrofitError error) {
-                        showProgress(false);
-                        final ConnectivityManager conMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-                        final NetworkInfo activeNetwork = conMgr.getActiveNetworkInfo();
-                        if (activeNetwork != null && activeNetwork.isConnected()) //device is online
-                        {
-                            if (error != null && error.getResponse()!=null)
-                                System.out.println(error.getResponse().getStatus());
-                            else
-                            {       //Server is unresponsive
-                                System.out.println("Server is unresponsive");
-                                Toast.makeText(LoginActivity.this, "Server is unresponsive, please try later or report to moderators", Toast.LENGTH_LONG).show();
-                            }
-                        }
-                        else    //device not online
-                        {
-                            System.out.println("Connection is slow or no connection found, enable your wifi or try later");
-                            Toast.makeText(LoginActivity.this, "Connection is slow or no connection found, enable your wifi or try later", Toast.LENGTH_LONG).show();
+                public void failure(RetrofitError error) {
+                    showProgress(false);
+                    final ConnectivityManager conMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+                    final NetworkInfo activeNetwork = conMgr.getActiveNetworkInfo();
+                    if (activeNetwork != null && activeNetwork.isConnected()) //device is online
+                    {
+                        if (error != null && error.getResponse()!=null)
+                            System.out.println(error.getResponse().getStatus());
+                        else
+                        {       //Server is unresponsive
+                            System.out.println("Server is unresponsive");
+                            Toast.makeText(LoginActivity.this, "Server is unresponsive, please try later or report to moderators", Toast.LENGTH_LONG).show();
                         }
                     }
-                };
+                    else    //device not online
+                    {
+                        System.out.println("Connection is slow or no connection found, enable your wifi or try later");
+                        Toast.makeText(LoginActivity.this, "Connection is slow or no connection found, enable your wifi or try later", Toast.LENGTH_LONG).show();
+                    }
+                }
+            };
             simpleApi.getUser(username,password,cb);
         }
     }
@@ -294,58 +287,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
-    }
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        return new CursorLoader(this,
-                // Retrieve data rows for the device user's 'profile' contact.
-                Uri.withAppendedPath(ContactsContract.Profile.CONTENT_URI,
-                        ContactsContract.Contacts.Data.CONTENT_DIRECTORY), ProfileQuery.PROJECTION,
-
-                // Select only username addresses.
-                ContactsContract.Contacts.Data.MIMETYPE +
-                        " = ?", new String[]{ContactsContract.CommonDataKinds.Nickname
-                .CONTENT_ITEM_TYPE},
-
-                // Show primary username addresses first. Note that there won't be
-                // a primary username address if the user hasn't specified one.
-                ContactsContract.Contacts.Data.IS_PRIMARY + " DESC");
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        List<String> usernames = new ArrayList<String>();
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            usernames.add(cursor.getString(ProfileQuery.ADDRESS));
-            cursor.moveToNext();
-        }
-
-        addusernamesToAutoComplete(usernames);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> cursorLoader) {
-    }
-
-    private interface ProfileQuery {
-        String[] PROJECTION = {
-                ContactsContract.CommonDataKinds.Nickname.DISPLAY_NAME,
-                ContactsContract.CommonDataKinds.Nickname.IS_PRIMARY,
-        };
-
-        int ADDRESS = 0;
-        int IS_PRIMARY = 1;
-    }
-
-    private void addusernamesToAutoComplete(List<String> usernameAddressCollection) {
-        //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<String>(LoginActivity.this,
-                        android.R.layout.simple_dropdown_item_1line, usernameAddressCollection);
-
-        musernameView.setAdapter(adapter);
     }
 
     //onKeyDown,onKeyUp dummers to prevent bug in LG phones

@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical" >
-
     <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom" >
-
+        android:layout_height="0dp"
+        android:layout_gravity="bottom"
+        android:layout_weight="1">
         <TextView
             android:id="@+id/textKeyword"
             android:layout_width="wrap_content"
@@ -22,23 +20,16 @@
             android:layout_toRightOf="@+id/GroupPoints"
             android:layout_marginTop="64dp"
             android:layout_toLeftOf="@+id/UserName"
-            android:layout_toStartOf="@+id/UserName"
-            />
-
-        <TextView
-            android:id="@+id/textData"
+            android:layout_toStartOf="@+id/UserName"/>
+        <com.baoyz.swipemenulistview.SwipeMenuListView
+            android:id="@+id/listView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:contentDescription="@null"
-            android:src="@drawable/theatre_masks"
             android:includeFontPadding="false"
+            android:scrollbars="vertical"
             android:gravity="fill"
-            android:layout_centerVertical="true"
-            android:layout_alignLeft="@+id/textKeyword"
-            android:layout_alignStart="@+id/textKeyword"
-            android:layout_alignRight="@+id/textKeyword"
-            android:layout_alignEnd="@+id/textKeyword" />
-
+            android:layout_below="@+id/textKeyword"
+            android:layout_above="@+id/happyButton"/>
         <ImageButton
             android:id="@+id/happyButton"
             android:layout_width="wrap_content"
@@ -73,54 +64,49 @@
             android:soundEffectsEnabled="false"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
-            android:clickable="false"
-         />
-
-
+            android:clickable="false"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Small Text"
             android:id="@+id/GroupName"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"/>
-
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Small Text"
             android:id="@+id/GroupPoints"
             android:layout_alignParentTop="true"
             android:layout_toRightOf="@+id/GroupName"/>
-
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Small Text"
             android:id="@+id/UserName"
             android:layout_alignParentTop="true"
             android:layout_toLeftOf="@+id/UserPoints"/>
-
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Small Text"
             android:id="@+id/UserPoints"
             android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"/>
-
         <ProgressBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/progressBar"
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true" />
-
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/swipeButton"
+            android:background="@null"
+            android:src="@mipmap/swipe"
+            android:layout_alignBottom="@+id/textKeyword"
+            android:layout_alignRight="@+id/UserPoints"
+            android:layout_alignEnd="@+id/UserPoints" />
     </RelativeLayout>
-
-
 </LinearLayout>

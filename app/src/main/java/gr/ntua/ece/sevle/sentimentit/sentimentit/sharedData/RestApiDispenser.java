@@ -11,7 +11,7 @@ import retrofit.client.OkClient;
 /**
  * Created by Sevle on 2/25/2015.
  */
-public class RestAdiDispenser {
+public class RestApiDispenser {
 
     private static final String API_URL = "http://147.102.19.120:8080/SentimentIT1/webresources";
     private static RestAdapter restAdapterInstance = null;

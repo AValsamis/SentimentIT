@@ -13,7 +13,7 @@ import android.widget.ListView;
 import java.util.Collections;
 import java.util.List;
 
-import gr.ntua.ece.sevle.sentimentit.sentimentit.sharedData.RestAdiDispenser;
+import gr.ntua.ece.sevle.sentimentit.sentimentit.sharedData.RestApiDispenser;
 import gr.ntua.ece.sevle.sentimentit.sentimentit.databaseApi.SimpleApi;
 import gr.ntua.ece.sevle.sentimentit.sentimentit.entities.Groups;
 import retrofit.RetrofitError;
@@ -99,7 +99,7 @@ public  class LeaderboardGroupFragment extends ListFragment implements LoaderMan
         @Override
         public List<Groups> loadInBackground() {
             System.out.println("GroupFragmentAsyncTask.loadInBackground");
-            SimpleApi simpleApi = RestAdiDispenser.getSimpleApiInstance();
+            SimpleApi simpleApi = RestApiDispenser.getSimpleApiInstance();
             List<Groups> groups = null;
             try {
                 groups = simpleApi.getGroups();

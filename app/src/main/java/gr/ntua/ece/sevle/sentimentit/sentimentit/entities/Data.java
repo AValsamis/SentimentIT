@@ -1,9 +1,11 @@
 package gr.ntua.ece.sevle.sentimentit.sentimentit.entities;
 
+import java.util.Comparator;
+
 /**
  * Created by Sevle on 3/27/2015.
  */
-public class Data {
+public class Data implements Comparator<Data> {
     int dataID;
     String tweet;
     String keyword;
@@ -46,5 +48,10 @@ public class Data {
 
     public void setInitialCalculation(Double initialCalculation) {
         this.initialCalculation = initialCalculation;
+    }
+
+    @Override
+    public int compare(Data lhs, Data rhs) {
+        return 0;
     }
 }

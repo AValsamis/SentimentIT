@@ -20,7 +20,7 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import java.util.ArrayList;
 
-import gr.ntua.ece.sevle.sentimentit.sentimentit.sharedData.RestAdiDispenser;
+import gr.ntua.ece.sevle.sentimentit.sentimentit.sharedData.RestApiDispenser;
 import gr.ntua.ece.sevle.sentimentit.sentimentit.sharedData.UserData;
 import gr.ntua.ece.sevle.sentimentit.sentimentit.databaseApi.SimpleApi;
 import gr.ntua.ece.sevle.sentimentit.sentimentit.entities.Groups;
@@ -47,7 +47,7 @@ public class RegisterActivity extends ActionBarActivity {
         spinner = (Spinner) findViewById(gr.ntua.ece.sevle.sentimentit.sentimentit.R.id.spinner);
 
         //Set up rest adapter
-        simpleApi = RestAdiDispenser.getSimpleApiInstance();
+        simpleApi = RestApiDispenser.getSimpleApiInstance();
         spinner.setPrompt("Select the Group you belong!");
 
         Bundle bundle = getIntent().getExtras();

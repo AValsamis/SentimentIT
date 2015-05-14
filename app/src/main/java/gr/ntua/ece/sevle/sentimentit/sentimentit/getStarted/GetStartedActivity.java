@@ -11,38 +11,42 @@ import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.text.SpannableString;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.VideoView;
-
-//import com.baoyz.swipemenulistview.SwipeMenu;
-//import com.baoyz.swipemenulistview.SwipeMenuCreator;
-//import com.baoyz.swipemenulistview.SwipeMenuItem;
+import com.baoyz.swipemenulistview.SwipeMenu;
+import com.baoyz.swipemenulistview.SwipeMenuCreator;
+import com.baoyz.swipemenulistview.SwipeMenuItem;
+import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.google.gson.Gson;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
 import gr.ntua.ece.sevle.sentimentit.sentimentit.R;
 import gr.ntua.ece.sevle.sentimentit.sentimentit.databaseApi.SimpleApi;
 import gr.ntua.ece.sevle.sentimentit.sentimentit.entities.Data;
 import gr.ntua.ece.sevle.sentimentit.sentimentit.entities.UserVotedData;
 import gr.ntua.ece.sevle.sentimentit.sentimentit.entities.UserVotedDataPK;
 import gr.ntua.ece.sevle.sentimentit.sentimentit.sharedData.BusProvider;
-import gr.ntua.ece.sevle.sentimentit.sentimentit.sharedData.RestAdiDispenser;
+import gr.ntua.ece.sevle.sentimentit.sentimentit.sharedData.RestApiDispenser;
 import gr.ntua.ece.sevle.sentimentit.sentimentit.sharedData.UserData;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
+
+
 
 public class GetStartedActivity extends ActionBarActivity {
 
@@ -57,64 +61,135 @@ public class GetStartedActivity extends ActionBarActivity {
     ImageButton sadButton;
     ImageButton neutralButton;
     ImageButton happyButton;
-    TextView tweetText;
+    SwipeMenuListView tweetText;
+    ArrayList<String> tweetData = new ArrayList<String>();
+    AppAdapter adapter;
     TextView keywordText;
     Boolean needData;
-    VideoView video;
-
     UserData data;
     Bus bus;
     List<Data> tweets;
     TweetLoader tweetLoader;
     ProgressBar mProgressView;
-   // com.baoyz.swipemenulistview.SwipeMenuListView listView;
     private SimpleApi simpleApi;
+    int buttonId;
+    class AppAdapter extends BaseAdapter {
 
+        @Override
+        public int getCount() {
+            return tweetData.size();
+        }
+
+        @Override
+        public String getItem(int position) {
+            return tweetData.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                convertView = View.inflate(getApplicationContext(),
+                        R.layout.custom_swipelistview, null);
+                new ViewHolder(convertView);
+            }
+            TextView tv = (TextView)convertView.findViewById(R.id.item_label);
+            Typeface tf = Typeface.createFromAsset(getAssets(),"fonts/Caviar_Dreams_Bold.ttf");
+            tv.setTypeface(tf);
+            tv.setText(getItem(position));
+            return convertView;
+        }
+
+        class ViewHolder {
+            ImageView iv_icon;
+            TextView tv_name;
+
+            public ViewHolder(View view) {
+                iv_icon = (ImageView) view.findViewById(R.id.image_view);
+                tv_name = (TextView) view.findViewById(R.id.item_label);
+                view.setTag(this);
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_get_started);
-        /////////////////////////////////////////////////
-      //  listView = (com.baoyz.swipemenulistview.SwipeMenuListView )findViewById(R.id.listView);
-     /*   SwipeMenuCreator creator = new SwipeMenuCreator() {
+        tweetText = (SwipeMenuListView)findViewById(R.id.listView);
+        adapter = new AppAdapter();
+        tweetText.setAdapter(adapter);
+
+        SwipeMenuCreator creator = new SwipeMenuCreator() {
 
             @Override
             public void create(SwipeMenu menu) {
-                // create "open" item
-                SwipeMenuItem openItem = new SwipeMenuItem(
-                        getApplicationContext());
+                //create an action that will be showed on swiping an item in the list
+                SwipeMenuItem item1 = new SwipeMenuItem(getApplicationContext());
+                item1.setBackground(new ColorDrawable(Color.DKGRAY));
+                // set width of an option (px)
+                item1.setWidth(200);
+                item1.setTitle("Skip");
+                item1.setTitleSize(18);
+                item1.setTitleColor(Color.WHITE);
+                menu.addMenuItem(item1);
+
+                SwipeMenuItem item2 = new SwipeMenuItem(getApplicationContext());
                 // set item background
-                openItem.setBackground(new ColorDrawable(Color.rgb(0xC9, 0xC9,
-                        0xCE)));
-                // set item width
-
-                // set item title
-                openItem.setTitle("Open");
-                // set item title fontsize
-                openItem.setTitleSize(18);
-                // set item title font color
-                openItem.setTitleColor(Color.WHITE);
-                // add to menu
-                menu.addMenuItem(openItem);
-
-                // create "delete" item
-                SwipeMenuItem deleteItem = new SwipeMenuItem(
-                        getApplicationContext());
-                // set item background
-                deleteItem.setBackground(new ColorDrawable(Color.rgb(0xF9,
-                        0x3F, 0x25)));
-                // set item width
-
-                // set a icon
-                // add to menu
-                menu.addMenuItem(deleteItem);
+                item2.setBackground(new ColorDrawable(Color.RED));
+                item2.setWidth(200);
+                item2.setTitle("Irrelevant");
+                item2.setTitleSize(18);
+                item2.setTitleColor(Color.WHITE);
+                menu.addMenuItem(item2);
             }
         };
+        //set MenuCreator
+        tweetText.setMenuCreator(creator);
+        // set SwipeListener
+        tweetText.setClickable(false);
 
-// set creator
-        listView.setMenuCreator(creator);*/
-        /////////////////////////////////////////////////////////////
+        tweetText.setOnSwipeListener(new SwipeMenuListView.OnSwipeListener() {
+
+            @Override
+            public void onSwipeStart(int position) {
+                // swipe start
+            }
+
+            @Override
+            public void onSwipeEnd(int position) {
+                // swipe end
+            }
+        });
+
+        tweetText.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
+                switch (index) {
+                    case 0:
+                        buttonId=0;
+                        castVote(getCurrentFocus(), 0);
+                        break;
+                    case 1:
+                        buttonId=1;
+                        castVote(getCurrentFocus(), 1);
+                        break;
+                }
+                return false;
+            }});
+
+        ImageButton button = (ImageButton)findViewById(R.id.swipeButton);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tweetText.smoothOpenMenu(0);
+            }
+        });
+
         //SOUNDS
         mSoundPoolHelper = new SoundPoolHelper(1, this);
         mSoundLessId = mSoundPoolHelper.load(this, sounds[0], 1);
@@ -138,19 +213,14 @@ public class GetStartedActivity extends ActionBarActivity {
 
         //TWEET DATA
         keywordText=(TextView)findViewById(R.id.textKeyword);
-
-        Typeface tf = Typeface.createFromAsset(getAssets(),
-                "fonts/Caviar_Dreams_Bold.ttf");
-        tweetText=(TextView)findViewById(R.id.textData);
-        tweetText.setTypeface(tf);
         tweets=new ArrayList<Data>();
 
         //BUTTONS
         happyButton=(ImageButton)findViewById(R.id.happyButton);
         neutralButton=(ImageButton)findViewById(R.id.neutralButton);
         sadButton=(ImageButton)findViewById(R.id.sadButton);
-        lockButtons();
 
+        tweetText = (SwipeMenuListView)findViewById(R.id.listView);
         //PROGRESS BAR
         mProgressView= (ProgressBar)findViewById(R.id.progressBar);
         showProgress(true);
@@ -160,12 +230,10 @@ public class GetStartedActivity extends ActionBarActivity {
 
         //LOADER
         tweetLoader = new TweetLoader(bus,data.getUserName());
-
         //LOCK FOR LOADALL METHOD
-        needData =true;
-        tweetLoader.loadAll();
 
-        simpleApi = RestAdiDispenser.getSimpleApiInstance();
+        needData =true;
+        simpleApi = RestApiDispenser.getSimpleApiInstance();
     }
 
 
@@ -179,6 +247,7 @@ public class GetStartedActivity extends ActionBarActivity {
     @Override
     protected void onResume(){
         super.onResume();
+        lockButtons();
         bus.register(this);
         tweetLoader.loadAll();
     }
@@ -190,7 +259,7 @@ public class GetStartedActivity extends ActionBarActivity {
     }
 
 
-        @Override
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         mSoundPoolHelper.release();
@@ -214,49 +283,65 @@ public class GetStartedActivity extends ActionBarActivity {
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
-    public void onClick(View v) {
-        showProgress(true);
+    public void onClick(View v) {//}, int d) {
+        castVote(v, -1);
+    }
+
+    public void castVote(View v, int id){
+        if (!happyButton.isClickable())
+            return;
+        showProgress(false);
         lockButtons();
-        AudioManager am = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
-        //Check if phone is set to "Silent or Vibrate"
-        switch (am.getRingerMode()) {
-            case AudioManager.RINGER_MODE_SILENT:
-                Log.i("MyApp", "Silent mode");
+        AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+
+        if (id!=0) {
+            //Check if phone is set to "Silent or Vibrate"
+            switch (am.getRingerMode()) {
+                case AudioManager.RINGER_MODE_SILENT:
+                    Log.i("MyApp", "Silent mode");
+                    break;
+                case AudioManager.RINGER_MODE_VIBRATE:
+                    Log.i("MyApp", "Vibrate mode");
+                    break;
+                case AudioManager.RINGER_MODE_NORMAL: {
+                    Random random = new Random();
+                    int hit = random.nextInt(2) + 1;
+                    playSound(hit);
+                    Log.i("MyApp", "Normal mode");
+                }
                 break;
-            case AudioManager.RINGER_MODE_VIBRATE:
-                Log.i("MyApp","Vibrate mode");
-                break;
-            case AudioManager.RINGER_MODE_NORMAL: {
-                Random random = new Random();
-                int hit = random.nextInt(2)+1;
-                playSound(hit);
-                Log.i("MyApp", "Normal mode");
             }
-            break;
         }
 
         UserVotedData uvd = new UserVotedData();
-        UserVotedDataPK uvdPK=new UserVotedDataPK();
+        UserVotedDataPK uvdPK = new UserVotedDataPK();
         uvdPK.setDataID(tweets.get(0).getDataID());
         uvdPK.setUserName(data.getUserName());
-        switch(v.getId())
-        {
-            case R.id.happyButton:
-                uvd.setSos(1.0);
-                break;
-            case R.id.neutralButton:
-                uvd.setSos(0.0);
-                break;
-            case R.id.sadButton:
-                uvd.setSos(-1.0);
-                break;
-            default:
-                throw new RuntimeException("Unknown button ID");
-        }
+        if (id==-1)
+            switch(v.getId())
+            {
+                case R.id.happyButton:
+                    buttonId=2;
+                    uvd.setSos(1.0);
+                    break;
+                case R.id.neutralButton:
+                    buttonId=3;
+                    uvd.setSos(0.0);
+                    break;
+                case R.id.sadButton:
+                    buttonId=4;
+                    uvd.setSos(-1.0);
+                    break;
+                default:
+                    break;
+            }
+        else if (id==1)
+            uvd.setSos(-27.0);
+        else if (id==0)
+            uvd.setSos(-47.0);
         uvd.setUservoteddataPK(uvdPK);
         Log.i("Tag", "Request data " + new Gson().toJson(uvd));
         simpleApi.setUserVotedData(uvd, new Callback<com.squareup.okhttp.Response>()
@@ -264,36 +349,38 @@ public class GetStartedActivity extends ActionBarActivity {
             @Override
             public void success(com.squareup.okhttp.Response response, retrofit.client.Response response2)
             {
-                data.setGroupPoints(data.getGroupPoints()+1);
-                data.setUserPoints(data.getUserPoints() + 10);
-                groupPointsTextView.setText(data.getGroupPoints()+"");
-                userPointsTextView.setText(data.getUserPoints()+"");
-                tweets.remove(0);
-
-                if (tweets.size()!=0)
-                {
-                    keywordText.setText(tweets.get(0).getKeyword()+"");
-                    tweetText.setText(tweets.get(0).getTweet() + "");
-                    unlockButtons();
-                    showProgress(false);
+                if (buttonId!=0) {
+                    data.setGroupPoints(data.getGroupPoints() + 1);
+                    data.setUserPoints(data.getUserPoints() + 10);
+                    groupPointsTextView.setText(data.getGroupPoints() + "");
+                    userPointsTextView.setText(data.getUserPoints() + "");
                 }
-                else
-                {
-                    needData=true;
+                tweets.remove(0);
+                if (tweets.size() != 0) {
+                    SpannableString content = new SpannableString("Keyword: " + tweets.get(0).getKeyword() + "");
+                    content.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, content.length(), 0);
+                    keywordText.setText(content);
+                    tweetData.clear();
+                    tweetData.add(tweets.get(0).getTweet() + "");
+                    adapter.notifyDataSetChanged();
+                    showProgress(false);
+                    unlockButtons();
+                } else {
+                    needData = true;
                     tweetLoader.loadAll();
                 }
-
             }
 
             @Override
             public void failure(RetrofitError error) {
-               keywordText.setText("");
-               tweetText.setText("An error occurred during distribution of data!");
-               showProgress(false);
+                keywordText.setText("");
+                tweetData.clear();
+                tweetData.add("An error occurred during distribution of data!");
+                adapter.notifyDataSetChanged();
+                showProgress(false);
+                lockButtons();
             }
         });
-
-
     }
 
     private void playSound(int soundId) {
@@ -305,34 +392,43 @@ public class GetStartedActivity extends ActionBarActivity {
     {
         if (needData)
         {
+            tweets.clear();
             tweets=event.tweets;
             if (tweets.size()!=0) {
                 String spaceFree = tweets.get(0).getTweet().replaceAll("\\s+", " ");
-                keywordText.setText("");
-                keywordText.setText(tweets.get(0).getKeyword());
-                tweetText.setText("");
-                tweetText.setText(spaceFree);
+                SpannableString content = new SpannableString("Keyword: "+tweets.get(0).getKeyword()+"");
+                content.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),0,content.length(), 0);
+                keywordText.setText(content);
+                tweetData.clear();
+                tweetData.add(spaceFree);
+                adapter.notifyDataSetChanged();
                 needData = false;
                 showProgress(false);
                 unlockButtons();
             }
             else
             {
-                tweetText.setText("Congratulations, you have completed \"sentimentation\" of all tweets in our database. \nCheck back later for more!" );
+                tweetData.clear();
+                tweetData.add("Congratulations, you have completed \"sentimentation\" of all tweets in our database. \nCheck back later for more!");
+                adapter.notifyDataSetChanged();
                 showProgress(false);
                 lockButtons();
             }
 
         }
+        else
+            unlockButtons();
     }
 
     @Subscribe
     public void onTweetsLoadFailure(TweetsLoadFailedEvent event)
     {
         Log.i("GetStartedActivity", "FAILURE");
-        tweetText.setText("An error occurred with your connection, please try later: \n"+event.error);
-        lockButtons();
+        tweetData.clear();
+        tweetData.add("An error occurred with your connection, please try later: \n");//+event.error);
+        adapter.notifyDataSetChanged();
         showProgress(false);
+        lockButtons();
 
     }
 
@@ -363,7 +459,7 @@ public class GetStartedActivity extends ActionBarActivity {
         public TweetLoader(Bus bus, String Username){
             this.bus = bus;
             this.Username=Username;
-            simpleApi = RestAdiDispenser.getSimpleApiInstance();
+            simpleApi = RestApiDispenser.getSimpleApiInstance();
         }
 
         public void loadAll()
@@ -394,6 +490,7 @@ public class GetStartedActivity extends ActionBarActivity {
         public RetrofitError error;
         public TweetsLoadFailedEvent(RetrofitError error) {this.error=error;}
     }
+
 
 
     public void unlockButtons(){
