@@ -28,7 +28,7 @@ import retrofit.RetrofitError;
 public class LeaderboardUserFragment extends ListFragment implements LoaderManager.LoaderCallbacks<List<User>> {
 
     private static final String ARG_SECTION_NUMBER = "section_number";
-
+    Toast toast;
     LeaderboardUserArray mAdapter;
 
     /**
@@ -69,6 +69,7 @@ public class LeaderboardUserFragment extends ListFragment implements LoaderManag
     @Override
     public Loader<List<User>> onCreateLoader(int arg0, Bundle arg1) {
         System.out.println("UserFragment.onCreateLoader");
+
         return new DataListLoader(getActivity());
     }
 
@@ -76,14 +77,23 @@ public class LeaderboardUserFragment extends ListFragment implements LoaderManag
     public void onLoadFinished(Loader<List<User>> arg0, List<User> data) {
         mAdapter.setData(data);
         System.out.println("UserFragment.onLoadFinished");
+        toast = Toast.makeText( this.getActivity()  , "" , Toast.LENGTH_SHORT );
         final ConnectivityManager conMgr = (ConnectivityManager) this.getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         final NetworkInfo activeNetwork = conMgr.getActiveNetworkInfo();
         if (data==null)
         {
-            if (activeNetwork == null || !activeNetwork.isConnected())
-                Toast.makeText(getActivity(), "Connection is slow or no connection found, enable your wifi or try later", Toast.LENGTH_SHORT).show();
+            if (activeNetwork == null || !activeNetwork.isConnected()) {
+                toast.setText("Connection is slow or no connection found, enable your wifi or try later");
+                toast.show();
+               // Toast.makeText(getActivity(), "Connection is slow or no connection found, enable your wifi or try later", Toast.LENGTH_SHORT).show();
+            }
             else
-                Toast.makeText(getActivity(), "Server is unresponsive, please try later or report to moderators", Toast.LENGTH_SHORT).show();
+            {
+                toast.setText("Server is unresponsive, please try later or report to moderators");
+                toast.show();
+                //Toast.makeText(getActivity(), "Server is unresponsive, please try later or report to moderators", Toast.LENGTH_SHORT).show();
+            }
+
         }
         // The list should now be shown.
         if (isResumed()) {

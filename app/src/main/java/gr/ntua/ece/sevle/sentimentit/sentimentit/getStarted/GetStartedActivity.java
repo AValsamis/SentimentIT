@@ -24,6 +24,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
 import com.baoyz.swipemenulistview.SwipeMenuItem;
@@ -73,6 +75,7 @@ public class GetStartedActivity extends ActionBarActivity {
     ProgressBar mProgressView;
     private SimpleApi simpleApi;
     int buttonId;
+
     class AppAdapter extends BaseAdapter {
 
         @Override

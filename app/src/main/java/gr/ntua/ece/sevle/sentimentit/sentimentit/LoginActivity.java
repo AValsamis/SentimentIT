@@ -4,24 +4,17 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Context;
-import android.content.CursorLoader;
 import android.content.Intent;
-import android.content.Loader;
-import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -29,13 +22,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import gr.ntua.ece.sevle.sentimentit.sentimentit.sharedData.RestApiDispenser;
-import gr.ntua.ece.sevle.sentimentit.sentimentit.sharedData.UserData;
 import gr.ntua.ece.sevle.sentimentit.sentimentit.databaseApi.SimpleApi;
 import gr.ntua.ece.sevle.sentimentit.sentimentit.entities.Groups;
 import gr.ntua.ece.sevle.sentimentit.sentimentit.entities.User;
+import gr.ntua.ece.sevle.sentimentit.sentimentit.sharedData.RestApiDispenser;
+import gr.ntua.ece.sevle.sentimentit.sentimentit.sharedData.UserData;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -54,16 +46,19 @@ public class LoginActivity extends Activity {
     private View mProgressView;
     private View mLoginFormView;
     private SimpleApi simpleApi;
+    private Toast toast;
     private Callback<User> cb;
     Callback <ArrayList<Groups>> cb2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(gr.ntua.ece.sevle.sentimentit.sentimentit.R.layout.activity_login);
         //Set up rest adapter
 
         simpleApi = RestApiDispenser.getSimpleApiInstance();
+        toast = Toast.makeText( this  , "" , Toast.LENGTH_SHORT );
         // Set up the login form.
         musernameView = (AutoCompleteTextView) findViewById(gr.ntua.ece.sevle.sentimentit.sentimentit.R.id.username);
 
@@ -119,13 +114,17 @@ public class LoginActivity extends Activity {
                         System.out.println(error.getResponse().getStatus());
                     else {       //Server is unresponsive
                         System.out.println("Server is unresponsive");
-                        Toast.makeText(LoginActivity.this, "Server is unresponsive, please try later or report to moderators", Toast.LENGTH_LONG).show();
+                        toast.setText("Server is unresponsive, please try later or report to moderators");
+                        toast.show();
+                        //Toast.makeText(LoginActivity.this, "Server is unresponsive, please try later or report to moderators", Toast.LENGTH_LONG).show();
                     }
                 }
                 else    //device not online
                 {
                     System.out.println("Connection is slow or no connection found, enable your wifi or try later");
-                    Toast.makeText(LoginActivity.this, "Connection is slow or no connection found, enable your wifi or try later", Toast.LENGTH_LONG).show();
+                    toast.setText("Connection is slow or no connection found, enable your wifi or try later");
+                    toast.show();
+                  //  Toast.makeText(LoginActivity.this, "Connection is slow or no connection found, enable your wifi or try later", Toast.LENGTH_LONG).show();
                 }
 
             }
@@ -226,13 +225,17 @@ public class LoginActivity extends Activity {
                         else
                         {       //Server is unresponsive
                             System.out.println("Server is unresponsive");
-                            Toast.makeText(LoginActivity.this, "Server is unresponsive, please try later or report to moderators", Toast.LENGTH_LONG).show();
+                            toast.setText("Server is unresponsive, please try later or report to moderators");
+                            toast.show();
+                            //Toast.makeText(LoginActivity.this, "Server is unresponsive, please try later or report to moderators", Toast.LENGTH_LONG).show();
                         }
                     }
                     else    //device not online
                     {
                         System.out.println("Connection is slow or no connection found, enable your wifi or try later");
-                        Toast.makeText(LoginActivity.this, "Connection is slow or no connection found, enable your wifi or try later", Toast.LENGTH_LONG).show();
+                        toast.setText("Connection is slow or no connection found, enable your wifi or try later");
+                        toast.show();
+                        //Toast.makeText(LoginActivity.this, "Connection is slow or no connection found, enable your wifi or try later", Toast.LENGTH_LONG).show();
                     }
                 }
             };

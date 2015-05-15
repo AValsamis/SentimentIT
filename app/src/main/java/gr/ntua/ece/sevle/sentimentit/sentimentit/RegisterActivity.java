@@ -4,8 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -18,13 +18,14 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+
 import java.util.ArrayList;
 
-import gr.ntua.ece.sevle.sentimentit.sentimentit.sharedData.RestApiDispenser;
-import gr.ntua.ece.sevle.sentimentit.sentimentit.sharedData.UserData;
 import gr.ntua.ece.sevle.sentimentit.sentimentit.databaseApi.SimpleApi;
 import gr.ntua.ece.sevle.sentimentit.sentimentit.entities.Groups;
 import gr.ntua.ece.sevle.sentimentit.sentimentit.entities.User;
+import gr.ntua.ece.sevle.sentimentit.sentimentit.sharedData.RestApiDispenser;
+import gr.ntua.ece.sevle.sentimentit.sentimentit.sharedData.UserData;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 
@@ -36,16 +37,18 @@ public class RegisterActivity extends ActionBarActivity {
     private EditText passwordRepeat;
     private SimpleApi simpleApi;
     private Spinner spinner;
+    private Toast toast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(gr.ntua.ece.sevle.sentimentit.sentimentit.R.layout.activity_register);
         musernameView = (AutoCompleteTextView) findViewById(gr.ntua.ece.sevle.sentimentit.sentimentit.R.id.usernameRegister);
         mPasswordView = (EditText) findViewById(gr.ntua.ece.sevle.sentimentit.sentimentit.R.id.passwordRegister);
         passwordRepeat = (EditText) findViewById(gr.ntua.ece.sevle.sentimentit.sentimentit.R.id.passwordRepeat);
         spinner = (Spinner) findViewById(gr.ntua.ece.sevle.sentimentit.sentimentit.R.id.spinner);
-
+        toast = Toast.makeText( this  , "" , Toast.LENGTH_SHORT );
         //Set up rest adapter
         simpleApi = RestApiDispenser.getSimpleApiInstance();
         spinner.setPrompt("Select the Group you belong!");
@@ -161,19 +164,25 @@ public class RegisterActivity extends ActionBarActivity {
                     {
                         if (error != null && error.getResponse()!=null)
                         {
-                            Toast.makeText(RegisterActivity.this, "Username was found in system", Toast.LENGTH_LONG).show();
+                            toast.setText("Username was found in system");
+                            toast.show();
+                            //Toast.makeText(RegisterActivity.this, "Username was found in system", Toast.LENGTH_LONG).show();
                             System.out.println("Username was found in system, try again");
                             System.out.println(error.getResponse().getStatus());
                         }
                         else {       //Server is unresponsive
+                            toast.setText("Server is unresponsive, please try later or report to moderators");
+                            toast.show();
                             System.out.println("Server is unresponsive");
-                            Toast.makeText(RegisterActivity.this, "Server is unresponsive, please try later or report to moderators", Toast.LENGTH_LONG).show();
+                            //Toast.makeText(RegisterActivity.this, "Server is unresponsive, please try later or report to moderators", Toast.LENGTH_LONG).show();
                         }
                     }
                     else    //device not online
                     {
+                        toast.setText("Connection is slow or no connection found, enable your wifi or try later");
+                        toast.show();
                         System.out.println("Connection is slow or no connection found, enable your wifi or try later");
-                        Toast.makeText(getApplicationContext(), "Connection is slow or no connection found, enable your wifi or try later", Toast.LENGTH_LONG).show();
+                       // Toast.makeText(getApplicationContext(), "Connection is slow or no connection found, enable your wifi or try later", Toast.LENGTH_LONG).show();
                     }
                 }
             });
